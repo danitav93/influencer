@@ -16,14 +16,14 @@ import javax.swing.border.EmptyBorder;
 
 import facebook.FacebookLogic;
 import views.InfluencerModel;
-import views.ListOfInfluencer;
+import views.ListOfInfluencerJDialog;
 
 public class Main extends JFrame {
 
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField textFieldSearch;
 	private JTextField textField_2;
 	private JTextField textField_3;
 	private JTextField textField_4;
@@ -66,10 +66,10 @@ public class Main extends JFrame {
 		lblParolaChiave.setBounds(22, 62, 83, 16);
 		contentPane.add(lblParolaChiave);
 
-		textField = new JTextField();
-		textField.setBounds(80, 59, 278, 22);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		textFieldSearch = new JTextField();
+		textFieldSearch.setBounds(80, 59, 278, 22);
+		contentPane.add(textFieldSearch);
+		textFieldSearch.setColumns(10);
 
 		JLabel lblNewLabel_1 = new JLabel("Peso Like");
 		lblNewLabel_1.setBounds(22, 110, 56, 16);
@@ -143,8 +143,8 @@ public class Main extends JFrame {
 					public void run() {
 						
 						try {
-						List<InfluencerModel> list= FacebookLogic.getListOfInfluencers();
-						ListOfInfluencer dialog = new ListOfInfluencer(list); 
+						List<InfluencerModel> list= FacebookLogic.getListOfInfluencers(textFieldSearch.getText());
+						ListOfInfluencerJDialog dialog = new ListOfInfluencerJDialog(list); 
 						dialog.setVisible(true);
 						} catch (Exception e) {
 							e.printStackTrace();

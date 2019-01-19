@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JList;
 
-public class ListOfInfluencer extends JDialog {
+public class ListOfInfluencerJDialog extends JDialog {
 
 	/**
 	 * 
@@ -22,7 +22,6 @@ public class ListOfInfluencer extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField;
-	private JTextField textField_1;
 	private JTextField textField_2;
 	private JTextField textField_3;
 	private JList<String> list;
@@ -35,7 +34,7 @@ public class ListOfInfluencer extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public ListOfInfluencer(List<InfluencerModel> listInfluenzer) {
+	public ListOfInfluencerJDialog(List<InfluencerModel> listInfluenzer) {
 
 		setTitle("Risultati");
 		setBounds(100, 100, 450, 360);
@@ -64,18 +63,13 @@ public class ListOfInfluencer extends JDialog {
 				contentPanel.add(lblNome);
 			}
 			{
-				JLabel lblCognome = new JLabel("Cognome:");
-				lblCognome.setBounds(12, 174, 82, 16);
-				contentPanel.add(lblCognome);
-			}
-			{
 				JLabel lblUrl = new JLabel("Url:");
-				lblUrl.setBounds(12, 203, 56, 16);
+				lblUrl.setBounds(12, 174, 56, 16);
 				contentPanel.add(lblUrl);
 			}
 			{
 				JLabel lblScore = new JLabel("Score:");
-				lblScore.setBounds(12, 240, 56, 16);
+				lblScore.setBounds(12, 211, 56, 16);
 				contentPanel.add(lblScore);
 			}
 
@@ -84,18 +78,13 @@ public class ListOfInfluencer extends JDialog {
 			contentPanel.add(textField);
 			textField.setColumns(10);
 
-			textField_1 = new JTextField();
-			textField_1.setBounds(80, 171, 301, 22);
-			contentPanel.add(textField_1);
-			textField_1.setColumns(10);
-
 			textField_2 = new JTextField();
-			textField_2.setBounds(80, 203, 301, 22);
+			textField_2.setBounds(80, 174, 301, 22);
 			contentPanel.add(textField_2);
 			textField_2.setColumns(10);
 
 			textField_3 = new JTextField();
-			textField_3.setBounds(80, 237, 301, 22);
+			textField_3.setBounds(80, 208, 301, 22);
 			contentPanel.add(textField_3);
 			textField_3.setColumns(10);
 
@@ -114,7 +103,6 @@ public class ListOfInfluencer extends JDialog {
 			        	
 			        	
 			        	textField.setText(listInfluenzer.get(list.getSelectedIndex()).getNome());
-			        	textField_1.setText(listInfluenzer.get(list.getSelectedIndex()).getCognome());
 			        	textField_2.setText(listInfluenzer.get(list.getSelectedIndex()).getLinkProfilo());
 			        	textField_3.setText(Float.toString(listInfluenzer.get(list.getSelectedIndex()).getScore()));
 			         }

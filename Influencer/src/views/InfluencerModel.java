@@ -34,7 +34,7 @@ public class InfluencerModel {
 	
 	@Override
 	public String toString() {
-		return "   "+nome+"   "+cognome+"   "+score;
+		return "   "+nome+"   "+score;
 	}
 	
 }

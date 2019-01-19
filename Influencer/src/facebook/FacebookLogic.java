@@ -1,20 +1,22 @@
 package facebook;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.restfb.Connection;
-import com.restfb.DefaultFacebookClient;
-import com.restfb.FacebookClient;
-import com.restfb.Parameter;
-import com.restfb.Version;
-import com.restfb.types.User;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+
 
 import views.InfluencerModel;
 
 public class FacebookLogic {
 
-	public static List<InfluencerModel> getListOfInfluencers() {
+	/*public static List<InfluencerModel> getListOfInfluencers() {
 
 		ArrayList<InfluencerModel> list= new ArrayList<>();
 
@@ -41,7 +43,45 @@ public class FacebookLogic {
 		}
 
 		return list;
-	}
+	}*/
 
+	public static List<InfluencerModel> getListOfInfluencers(String searchQuery) {
+		
+		ArrayList<InfluencerModel> list= new ArrayList<>();
+
+		try {
+			
+			Document doc= Jsoup.connect("https://www.facebook.com") 
+					   .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
+		               .referrer("http://www.google.com") 
+		               .timeout(1000*5) //it's in milliseconds, so this means 5 seconds.              
+		               .get();
+
+		
+			Elements pages = doc.getElementsByClass(Constants.FACEBOOK_SEARCH_PAGINE_FIRST_LEVEL);
+			
+			for (Element page: pages) {
+				
+				InfluencerModel influencer = new InfluencerModel();
+				
+				list.add(influencer);
+				
+				influencer.setNome(page.getElementsByClass(Constants.FACEBOOK_SEARCH_NOME_PAGINE).first().select("span").text());
+				
+			}
+		
+		} catch (IOException e) {
+			e.printStackTrace();
+
+			return null;
+		}
+		
+		
+		
+		return list;
+
+		
+		
+	}
 
 }
