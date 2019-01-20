@@ -35,8 +35,8 @@ public class SeleniumTest {
 		// launch Fire fox and direct it to the Base URL
 		driver.get(baseUrl);
 
-		driver.findElement(By.xpath(".//*[@data-testid='royal_email']")).sendKeys("danitav93@hotmail.it");
-		driver.findElement(By.xpath(".//*[@data-testid='royal_pass']")).sendKeys("Guit.1993");
+		driver.findElement(By.xpath(".//*[@data-testid='royal_email']")).sendKeys("");
+		driver.findElement(By.xpath(".//*[@data-testid='royal_pass']")).sendKeys("");
 
 		driver.findElement(By.xpath(".//*[@data-testid='royal_login_button']")).click();
 
