@@ -8,17 +8,24 @@ import java.util.Queue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.swing.JDialog;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 
+import Utility.ConfigFileNotFoundException;
 import Utility.MyDriver;
+import Utility.PropertiesNotFoundException;
+import Utility.PropertiesService;
+import views.ListOfPaginaJDialog;
 import views.PaginaModel;
 //comment the above line and uncomment below line to use Chrome
 //import org.openqa.selenium.chrome.ChromeDriver;
 public class SeleniumLogic {
 
 
+	private String queryString;
 
 	long startTime = System.currentTimeMillis();
 
@@ -40,45 +47,53 @@ public class SeleniumLogic {
 	private  AtomicInteger numberOfPagesToProcessCounter=new AtomicInteger(0);
 
 	private  boolean isProcessingPageStarted=false;
+	
+	private  JDialog dlg;
 
+	public SeleniumLogic(String query, JDialog dlg) {
+		this.queryString=query;
+		this.dlg=dlg;
+	}
 
-	public void mainSeleniumLogic() {
-
+	public void startSeleniumLogic() throws PropertiesNotFoundException,ConfigFileNotFoundException {
 
 
 		//used by Seleniuk
-		System.setProperty("webdriver.chrome.driver", Constants.driverPath);
+		System.setProperty("webdriver.chrome.driver", PropertiesService.getStringProperty("driverPath"));
 
 		//inizializzo il primo driver così vado veloce
 		initFirstDriver();
 
-
 		//initialize mydrivers, they have to stay legged into the profile
-		for (int i=1;i<=Constants.NUMBER_OF_DRIVERS-1; i++) {
+		for (int i=1;i<=PropertiesService.getIntProperty("numberOfDrivers")-1; i++) {
 
 			Thread thread = new Thread(){
-				public void run(){
-					
-					MyDriver driver= new MyDriver(pagine,semPagine,semUrls,urls,semCounter,numberOfPagesToProcessCounter,seleniumLogic);
+				public void run() {
+					try  {
+						MyDriver driver= new MyDriver(pagine,semPagine,semUrls,urls,semCounter,numberOfPagesToProcessCounter,seleniumLogic);
 
-					drivers.add(driver);
+						drivers.add(driver);
 
-					driver.getDriver().manage().window().maximize();
+						driver.getDriver().manage().window().maximize();
 
-					// launch Fire fox and direct it to the Base URL
-					driver.getDriver().get(Constants.FACEBOOK_BASE_URL);
-					driver.getDriver().findElement(By.xpath(".//*[@data-testid='royal_email']")).sendKeys(Constants.FACEBOOK_EMAIL); 
-					driver.getDriver().findElement(By.xpath(".//*[@data-testid='royal_pass']")).sendKeys(Constants.FACEBOOK_PASSWORD);
-					driver.getDriver().findElement(By.xpath(".//*[@data-testid='royal_login_button']")).click();//login
-					try {
-						driver.getDriver().findElement(By.className("_3ixn")).click();//remove black shadowed window
+						// launch Fire fox and direct it to the Base URL
+						driver.getDriver().get(Constants.FACEBOOK_BASE_URL);
+						driver.getDriver().findElement(By.xpath(".//*[@data-testid='royal_email']")).sendKeys(PropertiesService.getStringProperty("facebookEmail"));
+						driver.getDriver().findElement(By.xpath(".//*[@data-testid='royal_pass']")).sendKeys(PropertiesService.getStringProperty("facebookPassword"));
+						driver.getDriver().findElement(By.xpath(".//*[@data-testid='royal_login_button']")).click();//login
+						try {
+							driver.getDriver().findElement(By.className("_3ixn")).click();//remove black shadowed window
+						} catch (Exception e) {
+
+						}
+						driver.setReady(true);
+						if (isProcessingPageStarted && !driver.isHasBeenAdvisedToStart() ) {
+							driver.fetchUrlFromGlobalList();
+							driver.setHasBeenAdvisedToStart(true);
+						}
+
 					} catch (Exception e) {
-
-					}
-					driver.setReady(true);
-					if (isProcessingPageStarted && !driver.isHasBeenAdvisedToStart() ) {
-						driver.fetchUrlFromGlobalList();
-						driver.setHasBeenAdvisedToStart(true);
+						e.printStackTrace();
 					}
 				}
 			};
@@ -95,7 +110,7 @@ public class SeleniumLogic {
 		}
 
 		//use driver0 to fetch pages urls
-		drivers.get(0).getDriver().findElement(By.xpath(".//*[@data-testid='search_input']")).sendKeys(Constants.QUERY); //insert search
+		drivers.get(0).getDriver().findElement(By.xpath(".//*[@data-testid='search_input']")).sendKeys(queryString); //insert search
 		drivers.get(0).getDriver().findElement(By.xpath(".//*[@data-testid='facebar_search_button']")).click();
 
 		//go to the "page" window
@@ -121,12 +136,12 @@ public class SeleniumLogic {
 
 		//scroll down the page to obtain more pages
 		try {
-			for (int i=0;i<=Constants.NUMBER_OF_PAGES_SCROLL;i++) {
+			for (int i=0;i<=PropertiesService.getIntProperty("numberOfPagesScroll");i++) {
 				Thread.sleep(1000);
 				JavascriptExecutor js = (JavascriptExecutor) drivers.get(0).getDriver();
 				js.executeScript("window.scrollTo(0,10000);");
 			}
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -145,13 +160,14 @@ public class SeleniumLogic {
 
 		startDriverProcessing();
 
+
 	}
 
 
 
 
 
-	private  void initFirstDriver() {
+	private  void initFirstDriver() throws PropertiesNotFoundException, ConfigFileNotFoundException {
 
 		MyDriver driver= new MyDriver(pagine,semPagine,semUrls,urls,semCounter,numberOfPagesToProcessCounter,seleniumLogic);
 
@@ -161,8 +177,8 @@ public class SeleniumLogic {
 
 		// launch Fire fox and direct it to the Base URL
 		driver.getDriver().get(Constants.FACEBOOK_BASE_URL);
-		driver.getDriver().findElement(By.xpath(".//*[@data-testid='royal_email']")).sendKeys(Constants.FACEBOOK_EMAIL); 
-		driver.getDriver().findElement(By.xpath(".//*[@data-testid='royal_pass']")).sendKeys(Constants.FACEBOOK_PASSWORD);
+		driver.getDriver().findElement(By.xpath(".//*[@data-testid='royal_email']")).sendKeys(PropertiesService.getStringProperty("facebookEmail")); 
+		driver.getDriver().findElement(By.xpath(".//*[@data-testid='royal_pass']")).sendKeys(PropertiesService.getStringProperty("facebookPassword"));
 		driver.getDriver().findElement(By.xpath(".//*[@data-testid='royal_login_button']")).click();//login
 		try {
 			driver.getDriver().findElement(By.className("_3ixn")).click();//remove black shadowed window
@@ -186,6 +202,7 @@ public class SeleniumLogic {
 	}
 
 	public  void endDriverProcessing() {
+		
 		Collections.sort(pagine,Collections.reverseOrder());
 		for (PaginaModel pagina: pagine) {
 			System.out.println(pagina.getNomePagina()+"   Score: "+pagina.getFinalScore() );
@@ -193,6 +210,10 @@ public class SeleniumLogic {
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 		System.out.println(elapsedTime/1000+"s");
+		ListOfPaginaJDialog dialog = new ListOfPaginaJDialog(pagine); 
+		dialog.setVisible(true);
+		dlg.setVisible(false);
+		
 	}
 
 

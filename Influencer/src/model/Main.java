@@ -3,19 +3,21 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import views.InfluencerModel;
-import views.ListOfInfluencerJDialog;
+import Utility.ConfigFileNotFoundException;
+import Utility.PropertiesNotFoundException;
+import Utility.PropertiesService;
+import logic.SeleniumLogic;
 
 public class Main extends JFrame {
 
@@ -23,21 +25,25 @@ public class Main extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField textFieldSearch;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
-	private JLabel lblDa;
-	private JLabel lblNumeroPost;
-	private JTextField textField_5;
-	private JLabel lblA;
-	private JTextField textField_6;
-	private JTextField textField_7;
 	private JFrame frame=this;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		
+		//carico il file di properties
+		try {
+			PropertiesService.init();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			 int dialogButton = JOptionPane.YES_OPTION;
+			 JOptionPane.showConfirmDialog (null, "Errore con il file di configurazione. Controlla la presenza del file config.properties","Errore!",dialogButton);
+		    System.exit(0);
+		}
+
+		
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -55,7 +61,7 @@ public class Main extends JFrame {
 	 */
 	public Main() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 434);
+		setBounds(100, 100, 503, 227);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -66,56 +72,9 @@ public class Main extends JFrame {
 		contentPane.add(lblParolaChiave);
 
 		textFieldSearch = new JTextField();
-		textFieldSearch.setBounds(80, 59, 278, 22);
+		textFieldSearch.setBounds(80, 59, 222, 22);
 		contentPane.add(textFieldSearch);
 		textFieldSearch.setColumns(10);
-
-		JLabel lblNewLabel_1 = new JLabel("Peso Like");
-		lblNewLabel_1.setBounds(22, 110, 56, 16);
-		contentPane.add(lblNewLabel_1);
-
-		JLabel lblPesoCommenti = new JLabel("Peso commenti");
-		lblPesoCommenti.setBounds(151, 110, 105, 16);
-		contentPane.add(lblPesoCommenti);
-
-		JLabel lblPesoCondivisioni = new JLabel("Peso Condivisioni");
-		lblPesoCondivisioni.setBounds(292, 110, 128, 16);
-		contentPane.add(lblPesoCondivisioni);
-
-		textField_2 = new JTextField();
-		textField_2.setBounds(32, 128, 25, 22);
-		contentPane.add(textField_2);
-		textField_2.setColumns(10);
-
-		textField_3 = new JTextField();
-		textField_3.setColumns(10);
-		textField_3.setBounds(178, 128, 25, 22);
-		contentPane.add(textField_3);
-
-		textField_4 = new JTextField();
-		textField_4.setColumns(10);
-		textField_4.setBounds(333, 128, 25, 22);
-		contentPane.add(textField_4);
-
-
-
-
-		lblDa = new JLabel("Da (gg/mm/aaaa)");
-		lblDa.setBounds(141, 184, 104, 16);
-		contentPane.add(lblDa);
-
-		lblNumeroPost = new JLabel("peso post");
-		lblNumeroPost.setBounds(22, 184, 83, 16);
-		contentPane.add(lblNumeroPost);
-
-		textField_5 = new JTextField();
-		textField_5.setBounds(32, 213, 25, 22);
-		contentPane.add(textField_5);
-		textField_5.setColumns(10);
-
-		lblA = new JLabel("a (gg/mm/aaaa)");
-		lblA.setBounds(292, 184, 105, 16);
-		contentPane.add(lblA);
 
 
 
@@ -142,13 +101,18 @@ public class Main extends JFrame {
 					public void run() {
 						
 						try {
-						/*List<InfluencerModel> list= FacebookLogic.getListOfInfluencers(textFieldSearch.getText());
-						ListOfInfluencerJDialog dialog = new ListOfInfluencerJDialog(list); 
-						dialog.setVisible(true);*/
-						} catch (Exception e) {
+						new SeleniumLogic(textFieldSearch.getText(),dlg).startSeleniumLogic();;
+						} catch (PropertiesNotFoundException e) {
 							e.printStackTrace();
+							 int dialogButton = JOptionPane.YES_OPTION;
+							 JOptionPane.showConfirmDialog (null, "Errore con il file di configurazione. Properties non trovata","Errore!",dialogButton);
+						    System.exit(0);
+						} catch (ConfigFileNotFoundException h) {
+							h.printStackTrace();
+							 int dialogButton = JOptionPane.YES_OPTION;
+							 JOptionPane.showConfirmDialog (null, "Errore con il file di configurazione. Controlla la presenza del file config.properties","Errore!",dialogButton);
+						    System.exit(0);
 						}
-						dlg.dispose();
 
 					}
 				});
@@ -158,18 +122,24 @@ public class Main extends JFrame {
 				
 			}
 		});
-		btnEseguiRicerca.setBounds(135, 324, 152, 25);
+		btnEseguiRicerca.setBounds(314, 58, 130, 25);
 		contentPane.add(btnEseguiRicerca);
-
-		textField_6 = new JTextField();
-		textField_6.setBounds(151, 213, 84, 22);
-		contentPane.add(textField_6);
-		textField_6.setColumns(10);
-
-		textField_7 = new JTextField();
-		textField_7.setColumns(10);
-		textField_7.setBounds(304, 213, 84, 22);
-		contentPane.add(textField_7);
+		
+		JButton btnNewButton = new JButton("Impostazioni");
+		btnNewButton.setBounds(16, 122, 110, 23);
+		contentPane.add(btnNewButton);
+		
+		JLabel lblFindYourInflucer = new JLabel("Find your influcer!");
+		lblFindYourInflucer.setBounds(182, 11, 120, 14);
+		contentPane.add(lblFindYourInflucer);
+		
+		JLabel lblPoweredByNodelab = new JLabel("Powered By NodeLab");
+		lblPoweredByNodelab.setBounds(334, 147, 130, 14);
+		contentPane.add(lblPoweredByNodelab);
+		
+		JLabel lblDevelopementTeam = new JLabel("Developement Team");
+		lblDevelopementTeam.setBounds(334, 163, 130, 14);
+		contentPane.add(lblDevelopementTeam);
 
 	}
 }

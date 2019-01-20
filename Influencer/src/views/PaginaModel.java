@@ -17,6 +17,9 @@ public class PaginaModel implements Comparable<PaginaModel>{
 	private float mediaCommenti=0;
 	private float mediaVisualizzazioni=0;
 	
+	private float finalScore=0;
+
+	
 	private String nomePagina;
 	private String url;
 	
@@ -35,7 +38,6 @@ public class PaginaModel implements Comparable<PaginaModel>{
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	float finalScore=0;
 	
 	
 	public float getFinalScore() {
@@ -116,13 +118,16 @@ public class PaginaModel implements Comparable<PaginaModel>{
 	public void setMediaCommenti(float mediaCommenti) {
 		this.mediaCommenti = mediaCommenti;
 	}
+	
 	@Override
 	public int compareTo(PaginaModel o) {
 		return Float.compare(this.finalScore, o.finalScore);
 	}
 	
 	
-	
+	public String toString() {
+		return nomePagina;
+	}
 	
 	
 	

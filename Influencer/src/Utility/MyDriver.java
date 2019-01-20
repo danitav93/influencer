@@ -17,7 +17,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import logic.Constants;
 import logic.SeleniumLogic;
 import views.PaginaModel;
 
@@ -70,7 +69,11 @@ public class MyDriver {
 			if (!booleanIsRunning) {
 				Thread thread = new Thread(){
 					public void run(){
-						processPagina();
+						try {
+							processPagina();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				};
 				thread.start();
@@ -83,7 +86,7 @@ public class MyDriver {
 
 
 
-	private void processPagina() {
+	private void processPagina() throws PropertiesNotFoundException, ConfigFileNotFoundException {
 
 		if (listaUrlsLocale.isEmpty()) {
 			booleanIsRunning=false;
@@ -98,7 +101,7 @@ public class MyDriver {
 		driver.get(urlPagina);
 
 		try {
-			for (int i=0;i<=Constants.NUMBER_OF_POSTS_SCROLL;i++) {
+			for (int i=0;i<=PropertiesService.getIntProperty("numberOfPostScroll");i++) {
 				try {
 					if (driver.findElement(By.className("_3ixn"))!=null) {
 						driver.findElement(By.className("_3ixn")).click();
@@ -157,7 +160,7 @@ public class MyDriver {
 			int numeroPostVisualizzazioniUltimoPeriodo=0;
 
 			Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-			calendar.add(Calendar.DAY_OF_MONTH, - Constants.DAYS_CHECK);		
+			calendar.add(Calendar.DAY_OF_MONTH, - PropertiesService.getIntProperty("daysCheck"));		
 
 			List<WebElement> postsElementUp= driver.findElements(By.cssSelector("div[class='_1dwg _1w_m _q7o']"));
 			List<WebElement> postsElementDown= driver.findElements(By.cssSelector("div[class='_57w']"));
@@ -230,8 +233,8 @@ public class MyDriver {
 
 		pagina.setCommentiPostUltimoPeriodo(commentiPostUltimoPeriodo);
 
-		if (Constants.DAYS_CHECK>0) {
-			pagina.setMediaPostGiornaliera((float)numeroPostUltimoPeriodo/Constants.DAYS_CHECK);
+		if (PropertiesService.getIntProperty("daysCheck")>0) {
+			pagina.setMediaPostGiornaliera((float)numeroPostUltimoPeriodo/PropertiesService.getIntProperty("daysCheck"));
 		} else {
 			pagina.setMediaPostGiornaliera((float)numeroPostUltimoPeriodo/1);
 		}
@@ -252,7 +255,7 @@ public class MyDriver {
 			pagina.setMediaVisualizzazioni((float)visualizzazioniPostUltimoPeriodo/numeroPostVisualizzazioniUltimoPeriodo);
 		}
 
-		pagina.setFinalScore(pagina.getMiPiacePagina()*Constants.miPiacePaginaScore+pagina.getFollowersPagina()*Constants.followersPaginaScore+pagina.getMediaCommenti()*Constants.mediaCommentiScore+pagina.getMediaCondivisioni()*Constants.mediaCondivisioniScore+pagina.getMediaLike()*Constants.mediaLikeScore+pagina.getMediaPostGiornaliera()*Constants.mediaPostGiornalieraScore+pagina.getMediaVisualizzazioni()*Constants.mediaVisualizzazioniScore);
+		pagina.setFinalScore(pagina.getMiPiacePagina()*PropertiesService.getIntProperty("miPiacePaginaScore")+pagina.getFollowersPagina()*PropertiesService.getIntProperty("followersPaginaScore")+pagina.getMediaCommenti()*PropertiesService.getIntProperty("mediaCommentiScore")+pagina.getMediaCondivisioni()*PropertiesService.getIntProperty("mediaCondivisioniScore")+pagina.getMediaLike()*PropertiesService.getIntProperty("mediaLikeScore")+pagina.getMediaPostGiornaliera()*PropertiesService.getIntProperty("mediaPostGiornalieraScore")+pagina.getMediaVisualizzazioni()*PropertiesService.getIntProperty("mediaVisualizzazioniScore"));
 
 		} catch (Exception e) {
 		}
