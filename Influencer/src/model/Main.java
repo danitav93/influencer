@@ -14,7 +14,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import facebook.FacebookLogic;
+import logic.FacebookLogic;
 import views.InfluencerModel;
 import views.ListOfInfluencerJDialog;
 
