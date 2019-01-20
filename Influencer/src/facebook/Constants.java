@@ -4,14 +4,14 @@ package facebook;
 public class Constants {
 	
 	
-	public static final String REDIRECT_URI= "http://localhost:8080/facebookfriends/FriendsListServlet";
+	public static final String REDIRECT_URI= "";
 
 
-	public static final String MY_ACCESS_TOKEN = "762547484109320|rca63Nq1TfTFye6ThPk6FzaNx6k";
+	public static final String MY_ACCESS_TOKEN = "";
 
 	// Facebook App
-	public static final String MY_APP_ID = "762547484109320";
-	public static final String MY_APP_SECRET = "8f1acdf88887c9b0378cda05a91bb7e7";
+	public static final String MY_APP_ID = "";
+	public static final String MY_APP_SECRET = "";
 	
 	
 	//JSoup
