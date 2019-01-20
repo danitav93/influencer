@@ -14,7 +14,6 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import logic.FacebookLogic;
 import views.InfluencerModel;
 import views.ListOfInfluencerJDialog;
 
@@ -143,9 +142,9 @@ public class Main extends JFrame {
 					public void run() {
 						
 						try {
-						List<InfluencerModel> list= FacebookLogic.getListOfInfluencers(textFieldSearch.getText());
+						/*List<InfluencerModel> list= FacebookLogic.getListOfInfluencers(textFieldSearch.getText());
 						ListOfInfluencerJDialog dialog = new ListOfInfluencerJDialog(list); 
-						dialog.setVisible(true);
+						dialog.setVisible(true);*/
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
