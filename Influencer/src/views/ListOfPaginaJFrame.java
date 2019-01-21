@@ -18,6 +18,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -247,6 +248,8 @@ public class ListOfPaginaJFrame extends JFrame {
 							Path path = Paths.get(filename);
 							byte[] strToBytes = ((PaginaModel)listPagine.get(list.getSelectedIndex())).toExportString().getBytes();
 							Files.write(path, strToBytes);
+							Object[] options = {"OK"};
+							JOptionPane.showOptionDialog(null, "Esportazione avvenuta con successo","Bene!",JOptionPane.PLAIN_MESSAGE,JOptionPane.INFORMATION_MESSAGE,null,options,options[0]);
 						} 
 					} catch (Exception e) {
 						e.printStackTrace();

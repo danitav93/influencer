@@ -21,6 +21,7 @@ import Utility.LoginFaildException;
 import Utility.MyDriver;
 import Utility.MyProgressBar;
 import Utility.NessunaPaginaTrovataException;
+import Utility.NoDriverFounfException;
 import Utility.PropertiesNotFoundException;
 import Utility.PropertiesService;
 import views.ListOfPaginaJFrame;
@@ -67,7 +68,7 @@ public class SeleniumLogic {
 		this.btnEseguiRicerca=btnEseguiRicerca;
 	}
 
-	public void startSeleniumLogic() throws PropertiesNotFoundException,ConfigFileNotFoundException, NessunaPaginaTrovataException, LoginFaildException {
+	public void startSeleniumLogic() throws PropertiesNotFoundException,ConfigFileNotFoundException, NessunaPaginaTrovataException, LoginFaildException, NoDriverFounfException {
 
 		System.setProperty("webdriver.chrome.driver", PropertiesService.getStringProperty("driverPath"));
 		
@@ -90,7 +91,7 @@ public class SeleniumLogic {
 						if (drivers==null) {
 							semDriver.release();
 							driver.getDriver().close();
-							this.destroy();//lo so che è deprecato ma sono sicuro di aver rilasciato tutte le risorse
+							destroy();//lo so che è deprecato ma sono sicuro di aver rilasciato tutte le risorse
 						}
 						drivers.add(driver);
 						semDriver.release();
@@ -226,7 +227,7 @@ public class SeleniumLogic {
 
 	}
 
-	private  void initFirstDriver() throws PropertiesNotFoundException, ConfigFileNotFoundException {
+	private  void initFirstDriver() throws PropertiesNotFoundException, ConfigFileNotFoundException, NoDriverFounfException {
 
 		MyDriver driver= new MyDriver(pagine,semPagine,semUrls,urls,semCounter,numberOfPagesToProcessCounter,seleniumLogic,0);
 

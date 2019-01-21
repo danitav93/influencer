@@ -50,6 +50,7 @@ public class ImpostazioniJFrame extends JFrame {
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			
 			public void run() {
 				try {
 					ImpostazioniJFrame frame = new ImpostazioniJFrame();
@@ -117,7 +118,7 @@ public class ImpostazioniJFrame extends JFrame {
 		}
 		panel_3.add(textField_mediaCommenti);
 		
-		JLabel lblPesoMediaPost = new JLabel("Peso media post girnalieri:");
+		JLabel lblPesoMediaPost = new JLabel("Peso media post giornalieri:");
 		lblPesoMediaPost.setBounds(10, 61, 175, 14);
 		panel_3.add(lblPesoMediaPost);
 		
@@ -210,15 +211,15 @@ public class ImpostazioniJFrame extends JFrame {
 		}
 		
 		
-		JLabel lblArcoTemporalePer = new JLabel("Arco temporale per la media");
-		lblArcoTemporalePer.setBounds(10, 186, 175, 14);
+		JLabel lblArcoTemporalePer = new JLabel("Arco temporale per la media (ultimi x giorni)");
+		lblArcoTemporalePer.setBounds(10, 206, 274, 14);
 		panel_3.add(lblArcoTemporalePer);
 		
 		textField_arcotemporale = new JTextField();
 		textField_arcotemporale.addKeyListener(new MyIntFilter());
 		textField_arcotemporale.setText("0");
 		textField_arcotemporale.setColumns(10);
-		textField_arcotemporale.setBounds(195, 186, 53, 20);
+		textField_arcotemporale.setBounds(276, 203, 53, 20);
 		panel_3.add(textField_arcotemporale);
 		try {
 			textField_arcotemporale.setText(PropertiesService.getStringProperty("daysCheck"));

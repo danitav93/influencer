@@ -3,6 +3,7 @@ package Utility;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
@@ -96,6 +97,34 @@ public class PropertiesService {
 	        e.printStackTrace();
 	        throw new ConfigFileNotFoundException();
 	    }
+		
+	}
+
+	public static void createPropertiesFile(String path) throws IOException {
+		
+		File file= new File(path);
+		
+		file.createNewFile();
+		
+		OutputStream newout = new FileOutputStream( file );
+		
+		Properties newProps= new Properties();
+		
+		newProps.setProperty("driverPath", Constants.driverPath);
+		newProps.setProperty("facebookPassword", "");
+		newProps.setProperty("numberOfDrivers",Integer.toString( Constants.numberOfDrivers));
+		newProps.setProperty("mediaLikeScore", Float.toString(Constants.mediaLikeScore));
+		newProps.setProperty("mediaCommentiScore", Float.toString(Constants.mediaCommentiScore));
+		newProps.setProperty("facebookEmail", "");
+		newProps.setProperty("miPiacePaginaScore", Float.toString(Constants.miPiacePaginaScore));
+		newProps.setProperty("mediaPostGiornalieraScore", Float.toString(Constants.mediaPostGiornalieriScore));
+		newProps.setProperty("numberOfPostScroll", Integer.toString( Constants.numberOfPostScroll));
+		newProps.setProperty("followersPaginaScore",Float.toString(Constants.followersPaginaScore));
+		newProps.setProperty("daysCheck", Integer.toString( Constants.daysCheck));
+		newProps.setProperty("mediaCondivisioniScore", Float.toString(Constants.mediaCondivisioniScore));
+		newProps.setProperty("numberOfPagesScroll", Integer.toString( Constants.numberOfPagesScroll));
+		newProps.setProperty("mediaVisualizzazioniScore", Float.toString(Constants.mediaCommentiScore));
+		newProps.store(newout,null);
 		
 	}
 	

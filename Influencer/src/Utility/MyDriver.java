@@ -11,8 +11,6 @@ import java.util.TimeZone;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.swing.JOptionPane;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Point;
@@ -52,13 +50,14 @@ public class MyDriver {
 	private int DRIVER_TAG;
 
 
-	public MyDriver(List<PaginaModel> pagine, Semaphore sem,Semaphore semUrls,Queue<String> globalUrlList, Semaphore semCounter, AtomicInteger numberOfPagesToProcessCounter,SeleniumLogic seleniumLogic, int DRIVER_TAG) {
+	public MyDriver(List<PaginaModel> pagine, Semaphore sem,Semaphore semUrls,Queue<String> globalUrlList, Semaphore semCounter, AtomicInteger numberOfPagesToProcessCounter,SeleniumLogic seleniumLogic, int DRIVER_TAG) throws NoDriverFounfException {
 		try {
 			driver=  new ChromeDriver();
 		} catch (java.lang.IllegalStateException e) {
-			Object[] options = {"OK"};
-			 JOptionPane.showOptionDialog(null, "Non ho trovato il driver di Chrome, ricontrolla il path!","Errore!",JOptionPane.PLAIN_MESSAGE,JOptionPane.ERROR_MESSAGE,null,options,options[0]);
-		    System.exit(0);
+			
+			throw new NoDriverFounfException();
+			
+			
 		}
 		driver.manage().window().setPosition(new Point(-2000, 0));
 		this.pagine=pagine;
@@ -311,7 +310,7 @@ public class MyDriver {
 			pagina.setMediaVisualizzazioni((float)visualizzazioniPostUltimoPeriodo/numeroPostVisualizzazioniUltimoPeriodo);
 		}
 
-		pagina.setFinalScore(pagina.getMiPiacePagina()*PropertiesService.getFloatProperty("miPiacePaginaScore")+pagina.getFollowersPagina()*PropertiesService.getFloatProperty("followersPaginaScore")+pagina.getMediaCommenti()*PropertiesService.getFloatProperty("mediaCommentiScore")+pagina.getMediaCondivisioni()*PropertiesService.getFloatProperty("mediaCondivisioniScore")+pagina.getMediaLike()*PropertiesService.getFloatProperty("mediaLikeScore")+pagina.getMediaPostGiornaliera()*PropertiesService.getFloatProperty("mediaPostGiornalieraScore")+pagina.getMediaVisualizzazioni()*PropertiesService.getFloatProperty("mediaVisualizzazioniScore"));
+		pagina.setFinalScore((pagina.getMiPiacePagina()*PropertiesService.getFloatProperty("miPiacePaginaScore"))+(pagina.getFollowersPagina()*PropertiesService.getFloatProperty("followersPaginaScore"))+(pagina.getMediaCommenti()*PropertiesService.getFloatProperty("mediaCommentiScore"))+(pagina.getMediaCondivisioni()*PropertiesService.getFloatProperty("mediaCondivisioniScore"))+(pagina.getMediaLike()*PropertiesService.getFloatProperty("mediaLikeScore"))+(pagina.getMediaPostGiornaliera()*PropertiesService.getFloatProperty("mediaPostGiornalieraScore"))+(pagina.getMediaVisualizzazioni()*PropertiesService.getFloatProperty("mediaVisualizzazioniScore")));
 
 		} catch (Exception e) {
 		}

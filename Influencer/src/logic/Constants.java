@@ -10,7 +10,7 @@ public class Constants {
 	
 	//application
 	public static final int MAX_DRIVER_PROCESSING_PAGE_NUMBER = 10;
-	public static final String PROPERTIES_FILE_PATH = "C:\\Users\\User\\Downloads\\config.properties";
+	public static final String PROPERTIES_FILE_PATH = System.getProperty("user.home")+"/FindYourInfluencer/config.properties";
 	
 	//default parameters
 	public static final String driverPath=System.getProperty("user.home")+ "\\Desktop"+"\\chromedriver.exe";

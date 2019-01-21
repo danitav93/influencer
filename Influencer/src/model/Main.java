@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -19,6 +20,7 @@ import javax.swing.border.EmptyBorder;
 import Utility.ConfigFileNotFoundException;
 import Utility.LoginFaildException;
 import Utility.NessunaPaginaTrovataException;
+import Utility.NoDriverFounfException;
 import Utility.PropertiesNotFoundException;
 import Utility.PropertiesService;
 import logic.SeleniumLogic;
@@ -32,12 +34,33 @@ public class Main extends JFrame {
 	private JTextField textFieldSearch;
 	private JFrame frame=this;
 	private ImpostazioniJFrame impostazioniJFrame;
+	private JButton btnNewButton;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 
+		//crea la cartella per il file di properties se già non esiste
+		try {
+			
+			File theDir = new File(System.getProperty("user.home")+"/FindYourInfluencer");
+			File theFile = new File(System.getProperty("user.home")+"/FindYourInfluencer/config.properties");
+			
+			if (!theDir.exists()) {
+				theDir.mkdir();
+				PropertiesService.createPropertiesFile(theDir+"/config.properties");
+			} else if (!theFile.exists()) {
+				PropertiesService.createPropertiesFile(theDir+"/config.properties");
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			Object[] options = {"OK"};
+			JOptionPane.showOptionDialog(null, "Errore con il file di configurazione. Non riesco a creare a cartella.","Errore!",JOptionPane.PLAIN_MESSAGE,JOptionPane.ERROR_MESSAGE,null,options,options[0]);
+			System.exit(0);
+		}
+		
 		//used by Selenium
 		try {
 			PropertiesService.init();
@@ -109,6 +132,7 @@ public class Main extends JFrame {
 					@Override
 					public void run() {
 						btnEseguiRicerca.setEnabled(false);
+						btnNewButton.setEnabled(false);
 						try {
 							new SeleniumLogic(textFieldSearch.getText(),dlg,btnEseguiRicerca).startSeleniumLogic();;
 						} catch (PropertiesNotFoundException e) {
@@ -125,8 +149,13 @@ public class Main extends JFrame {
 						} catch (LoginFaildException p) {
 							Object[] options = {"OK"};
 							JOptionPane.showOptionDialog(null, "Non sono riusito ad effettuare il login, controlla le credenziali","Errore!",JOptionPane.PLAIN_MESSAGE,JOptionPane.ERROR_MESSAGE,null,options,options[0]);
-						} finally {
+						} catch (NoDriverFounfException k){
+							Object[] options = {"OK"};
+							JOptionPane.showOptionDialog(null, "Non ho trovato il driver di Chrome, ricontrolla il path!","Errore!",JOptionPane.PLAIN_MESSAGE,JOptionPane.ERROR_MESSAGE,null,options,options[0]);
+						}finally {
 							btnEseguiRicerca.setEnabled(true);
+							btnNewButton.setEnabled(true);
+							dlg.setVisible(false);
 						}
 
 					}
@@ -142,7 +171,7 @@ public class Main extends JFrame {
 
 		frame.getRootPane().setDefaultButton(btnEseguiRicerca);
 
-		JButton btnNewButton = new JButton("Impostazioni");
+		btnNewButton = new JButton("Impostazioni");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (impostazioniJFrame==null) {
