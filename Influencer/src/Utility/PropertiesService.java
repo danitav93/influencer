@@ -25,7 +25,6 @@ public class PropertiesService {
 			f = new File(Constants.PROPERTIES_FILE_PATH);
 			is = new FileInputStream( f );
 			props.load( is );
-			out = new FileOutputStream( f );
 		} catch (Exception e) {
 			throw new ConfigFileNotFoundException();
 		}
@@ -57,10 +56,24 @@ public class PropertiesService {
 			}
 	}
 	
+	public static float getFloatProperty(String key) throws PropertiesNotFoundException, ConfigFileNotFoundException {
+		try {
+			String toReturn=props.getProperty(key);
+			
+			if (toReturn==null) {
+				throw new PropertiesNotFoundException();
+			}
+			 return Float.parseFloat(toReturn);
+			} catch (Exception e) {
+				throw new ConfigFileNotFoundException();
+			}
+	}
 	
-	public void saveParamChanges (String key, String value) throws PropertiesNotFoundException, ConfigFileNotFoundException {
-	    try {
-	        Properties props = new Properties();
+	
+	public static void saveParamChanges (String key, String value) throws PropertiesNotFoundException, ConfigFileNotFoundException {
+		
+		try {
+			out = new FileOutputStream( f );
 	        props.setProperty(key, value);
 	        props.store(out,null);
 	    }
@@ -68,6 +81,22 @@ public class PropertiesService {
 	        e.printStackTrace();
 	        throw new ConfigFileNotFoundException();
 	    }
+	}
+
+	public static void saveParamsChanges(String[] keys, String[] values) throws ConfigFileNotFoundException {
+		try {
+			out = new FileOutputStream( f );
+			for (int i=0;i<keys.length;i++) {
+				props.setProperty(keys[i], values[i]);
+			}
+	        
+	        props.store(out,null);
+	    }
+	    catch (Exception e ) {
+	        e.printStackTrace();
+	        throw new ConfigFileNotFoundException();
+	    }
+		
 	}
 	
 	

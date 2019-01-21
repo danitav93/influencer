@@ -1,6 +1,8 @@
 package model;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -15,9 +17,12 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import Utility.ConfigFileNotFoundException;
+import Utility.LoginFaildException;
+import Utility.NessunaPaginaTrovataException;
 import Utility.PropertiesNotFoundException;
 import Utility.PropertiesService;
 import logic.SeleniumLogic;
+import views.ImpostazioniJFrame;
 
 public class Main extends JFrame {
 
@@ -26,24 +31,26 @@ public class Main extends JFrame {
 	private JPanel contentPane;
 	private JTextField textFieldSearch;
 	private JFrame frame=this;
+	private ImpostazioniJFrame impostazioniJFrame;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		
-		//carico il file di properties
+
+		//used by Selenium
 		try {
 			PropertiesService.init();
 		} catch (Exception e1) {
 			e1.printStackTrace();
-			 int dialogButton = JOptionPane.YES_OPTION;
-			 JOptionPane.showConfirmDialog (null, "Errore con il file di configurazione. Controlla la presenza del file config.properties","Errore!",dialogButton);
-		    System.exit(0);
+			Object[] options = {"OK"};
+			JOptionPane.showOptionDialog(null, "Errore con il file di configurazione. Controlla la presenza del file config.properties.","Errore!",JOptionPane.PLAIN_MESSAGE,JOptionPane.ERROR_MESSAGE,null,options,options[0]);
+			System.exit(0);
+
 		}
 
-		
-		
+
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -60,6 +67,7 @@ public class Main extends JFrame {
 	 * Create the frame.
 	 */
 	public Main() {
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 503, 227);
 		contentPane = new JPanel();
@@ -76,7 +84,8 @@ public class Main extends JFrame {
 		contentPane.add(textFieldSearch);
 		textFieldSearch.setColumns(10);
 
-
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 
 
 		JButton btnEseguiRicerca = new JButton("Esegui ricerca");
@@ -86,57 +95,73 @@ public class Main extends JFrame {
 				final JDialog dlg = new JDialog(frame, "Progress Dialog", false);
 				JProgressBar progressBar=new JProgressBar();
 				progressBar.setIndeterminate(true);
-				progressBar.setSize(100, 10);
-			    dlg.getContentPane().add(BorderLayout.CENTER, progressBar);
-			    dlg.getContentPane().add(BorderLayout.NORTH, new JLabel("Progress..."));
-			    dlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-			    dlg.setSize(300, 75);
-			    dlg.setLocationRelativeTo(frame);
-			    progressBar.setVisible(true);
-			    dlg.setVisible(true);
-				
+				progressBar.setSize(200, 10);
+				dlg.getContentPane().add(BorderLayout.CENTER, progressBar);
+				dlg.getContentPane().add(BorderLayout.NORTH, new JLabel("Il driver pricipale sta processando la ricerca\n, non chiudere i browser ed attendere..."));
+				dlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+				dlg.setSize(500, 80);
+				dlg.setLocationRelativeTo(frame);
+				progressBar.setVisible(true);
+				dlg.setVisible(true);
+
 				Thread t = new Thread(new Runnable() {
-					
+
 					@Override
 					public void run() {
-						
+						btnEseguiRicerca.setEnabled(false);
 						try {
-						new SeleniumLogic(textFieldSearch.getText(),dlg).startSeleniumLogic();;
+							new SeleniumLogic(textFieldSearch.getText(),dlg,btnEseguiRicerca).startSeleniumLogic();;
 						} catch (PropertiesNotFoundException e) {
 							e.printStackTrace();
-							 int dialogButton = JOptionPane.YES_OPTION;
-							 JOptionPane.showConfirmDialog (null, "Errore con il file di configurazione. Properties non trovata","Errore!",dialogButton);
-						    System.exit(0);
+							Object[] options = {"OK"};
+							JOptionPane.showOptionDialog(null, "Errore con il file di configurazione. Controlla la presenza del file config.properties.","Errore!",JOptionPane.PLAIN_MESSAGE,JOptionPane.ERROR_MESSAGE,null,options,options[0]);
 						} catch (ConfigFileNotFoundException h) {
 							h.printStackTrace();
-							 int dialogButton = JOptionPane.YES_OPTION;
-							 JOptionPane.showConfirmDialog (null, "Errore con il file di configurazione. Controlla la presenza del file config.properties","Errore!",dialogButton);
-						    System.exit(0);
+							Object[] options = {"OK"};
+							JOptionPane.showOptionDialog(null, "Errore con il file di configurazione. Controlla la presenza del file config.properties.","Errore!",JOptionPane.PLAIN_MESSAGE,JOptionPane.ERROR_MESSAGE,null,options,options[0]);
+						} catch (NessunaPaginaTrovataException l) {
+							Object[] options = {"OK"};
+							JOptionPane.showOptionDialog(null, "Nessuna pagina trovata.","Attenzione!",JOptionPane.PLAIN_MESSAGE,JOptionPane.WARNING_MESSAGE,null,options,options[0]);
+						} catch (LoginFaildException p) {
+							Object[] options = {"OK"};
+							JOptionPane.showOptionDialog(null, "Non sono riusito ad effettuare il login, controlla le credenziali","Errore!",JOptionPane.PLAIN_MESSAGE,JOptionPane.ERROR_MESSAGE,null,options,options[0]);
+						} finally {
+							btnEseguiRicerca.setEnabled(true);
 						}
 
 					}
 				});
 				t.start();
-						
-				
-				
+
+
+
 			}
 		});
 		btnEseguiRicerca.setBounds(314, 58, 130, 25);
 		contentPane.add(btnEseguiRicerca);
-		
+
+		frame.getRootPane().setDefaultButton(btnEseguiRicerca);
+
 		JButton btnNewButton = new JButton("Impostazioni");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (impostazioniJFrame==null) {
+					impostazioniJFrame=new ImpostazioniJFrame();
+				}
+				impostazioniJFrame.setVisible(true);
+			}
+		});
 		btnNewButton.setBounds(16, 122, 110, 23);
 		contentPane.add(btnNewButton);
-		
-		JLabel lblFindYourInflucer = new JLabel("Find your influcer!");
-		lblFindYourInflucer.setBounds(182, 11, 120, 14);
+
+		JLabel lblFindYourInflucer = new JLabel("DRIVE OUT THE INFLUENCER!");
+		lblFindYourInflucer.setBounds(161, 11, 213, 14);
 		contentPane.add(lblFindYourInflucer);
-		
+
 		JLabel lblPoweredByNodelab = new JLabel("Powered By NodeLab");
 		lblPoweredByNodelab.setBounds(334, 147, 130, 14);
 		contentPane.add(lblPoweredByNodelab);
-		
+
 		JLabel lblDevelopementTeam = new JLabel("Developement Team");
 		lblDevelopementTeam.setBounds(334, 163, 130, 14);
 		contentPane.add(lblDevelopementTeam);

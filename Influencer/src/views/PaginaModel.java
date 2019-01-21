@@ -1,5 +1,13 @@
 package views;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.TimeZone;
+
+import Utility.ConfigFileNotFoundException;
+import Utility.PropertiesNotFoundException;
+import Utility.PropertiesService;
+
 public class PaginaModel implements Comparable<PaginaModel>{
 
 	private int miPiacePagina=0;
@@ -127,6 +135,29 @@ public class PaginaModel implements Comparable<PaginaModel>{
 	
 	public String toString() {
 		return nomePagina;
+	}
+	
+	public String toExportString() throws PropertiesNotFoundException, ConfigFileNotFoundException  {
+		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
+		Calendar calendar1=Calendar.getInstance(TimeZone.getDefault());
+		Calendar calendar2=Calendar.getInstance(TimeZone.getDefault());
+		calendar2.add(Calendar.DAY_OF_MONTH, - PropertiesService.getIntProperty("daysCheck"));
+		
+		String  toReturn="Powered by Nodelab Developement Team\n";
+		toReturn=toReturn+"Export dati pagina\n\n";
+		toReturn=toReturn+"Nome: "+nomePagina+"\n";
+		toReturn=toReturn+"Url: "+url+"\n";
+		toReturn=toReturn+"Total score: "+finalScore+"\n";
+		toReturn=toReturn+"Media commenti: "+mediaCommenti+"\n";
+		toReturn=toReturn+"Media condivisioni: "+mediaCondivisioni+"\n";
+		toReturn=toReturn+"Media like: "+mediaLike+"\n";
+		toReturn=toReturn+"Media visualizzazioni: "+mediaVisualizzazioni+"\n";
+		toReturn=toReturn+"Mi piace: "+miPiacePagina+"\n";
+		toReturn=toReturn+"Followers: "+followersPagina+"\n";
+		toReturn=toReturn+"Media post al giorno: "+mediaPostGiornaliera+"\n";
+		toReturn=toReturn+"\nPeriodo di riferimento: "+format1.format(calendar2.getTime())+"  -  "+format1.format(calendar1.getTime());
+
+		return toReturn;
 	}
 	
 	

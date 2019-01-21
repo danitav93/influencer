@@ -11,8 +11,11 @@ import java.util.TimeZone;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.swing.JOptionPane;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -26,7 +29,7 @@ public class MyDriver {
 	
 	private List<PaginaModel> pagine;
 
-	private WebDriver driver=  new ChromeDriver();
+	private WebDriver driver;
 
 	private Queue<String> listaUrlsLocale = new LinkedList<>();
 
@@ -45,9 +48,19 @@ public class MyDriver {
 	private AtomicInteger numberOfPagesToProcessCounter;
 
 	private boolean ready=false;
+	
+	private int DRIVER_TAG;
 
 
-	public MyDriver(List<PaginaModel> pagine, Semaphore sem,Semaphore semUrls,Queue<String> globalUrlList, Semaphore semCounter, AtomicInteger numberOfPagesToProcessCounter,SeleniumLogic seleniumLogic) {
+	public MyDriver(List<PaginaModel> pagine, Semaphore sem,Semaphore semUrls,Queue<String> globalUrlList, Semaphore semCounter, AtomicInteger numberOfPagesToProcessCounter,SeleniumLogic seleniumLogic, int DRIVER_TAG) {
+		try {
+			driver=  new ChromeDriver();
+		} catch (java.lang.IllegalStateException e) {
+			Object[] options = {"OK"};
+			 JOptionPane.showOptionDialog(null, "Non ho trovato il driver di Chrome, ricontrolla il path!","Errore!",JOptionPane.PLAIN_MESSAGE,JOptionPane.ERROR_MESSAGE,null,options,options[0]);
+		    System.exit(0);
+		}
+		driver.manage().window().setPosition(new Point(-2000, 0));
 		this.pagine=pagine;
 		this.semPagine=sem;
 		this.semUrls=semUrls;
@@ -55,6 +68,7 @@ public class MyDriver {
 		this.semCounter=semCounter;
 		this.numberOfPagesToProcessCounter=numberOfPagesToProcessCounter;
 		this.seleniumLogic=seleniumLogic;
+		this.DRIVER_TAG=DRIVER_TAG;
 	}
 
 	public void fetchUrlFromGlobalList() {
@@ -65,8 +79,15 @@ public class MyDriver {
 				driver.close();
 				return;
 			}
-			listaUrlsLocale.add(globalUrlList.remove());
+			String urlPresaInCarico=globalUrlList.remove();
+			listaUrlsLocale.add(urlPresaInCarico);
+			seleniumLogic.getSemProgBar().acquire();
+			seleniumLogic.getProgressBar().update("Driver "+DRIVER_TAG+" ha preso in carico "+urlPresaInCarico,seleniumLogic.getProgressBar().getValue()+1);
+			seleniumLogic.getSemProgBar().release();
 			if (!booleanIsRunning) {
+				seleniumLogic.getSemProgBar().acquire();
+				seleniumLogic.getProgressBar().updateDriver(1);
+				seleniumLogic.getSemProgBar().release();
 				Thread thread = new Thread(){
 					public void run(){
 						try {
@@ -90,14 +111,32 @@ public class MyDriver {
 
 		if (listaUrlsLocale.isEmpty()) {
 			booleanIsRunning=false;
+			try {
+				seleniumLogic.getSemProgBar().acquire();
+				seleniumLogic.getProgressBar().updateDriver(0);
+				seleniumLogic.getSemProgBar().release();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			return;
 
 		}
 
+		
+		
 		booleanIsRunning=true;
 
 		String urlPagina=listaUrlsLocale.remove();
-
+		
+		try {
+			seleniumLogic.getSemProgBar().acquire();
+			seleniumLogic.getProgressBar().update("Driver "+DRIVER_TAG+" sta processando "+urlPagina,null);
+			seleniumLogic.getSemProgBar().release();
+		} catch (InterruptedException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		
 		driver.get(urlPagina);
 
 		try {
@@ -115,7 +154,14 @@ public class MyDriver {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
+		try {
+			seleniumLogic.getSemProgBar().acquire();
+			seleniumLogic.getProgressBar().update(null,seleniumLogic.getProgressBar().getValue()+1);
+			seleniumLogic.getSemProgBar().release();
+		} catch (InterruptedException e2) {
+			e2.printStackTrace();
+		}
+		
 		PaginaModel pagina=new PaginaModel();
 
 		try {
@@ -168,6 +214,16 @@ public class MyDriver {
 
 
 			for (int i=0;i<postsElementUp.size();i++) {
+				
+				if (i==postsElementUp.size()/2) {
+					try {
+						seleniumLogic.getSemProgBar().acquire();
+						seleniumLogic.getProgressBar().update(null,seleniumLogic.getProgressBar().getValue()+1);
+						seleniumLogic.getSemProgBar().release();
+					} catch (InterruptedException e2) {
+						e2.printStackTrace();
+					}
+				}
 				WebElement elementUp=postsElementUp.get(i);
 				WebElement elementDown=postsElementDown.get(i);
 
@@ -255,7 +311,7 @@ public class MyDriver {
 			pagina.setMediaVisualizzazioni((float)visualizzazioniPostUltimoPeriodo/numeroPostVisualizzazioniUltimoPeriodo);
 		}
 
-		pagina.setFinalScore(pagina.getMiPiacePagina()*PropertiesService.getIntProperty("miPiacePaginaScore")+pagina.getFollowersPagina()*PropertiesService.getIntProperty("followersPaginaScore")+pagina.getMediaCommenti()*PropertiesService.getIntProperty("mediaCommentiScore")+pagina.getMediaCondivisioni()*PropertiesService.getIntProperty("mediaCondivisioniScore")+pagina.getMediaLike()*PropertiesService.getIntProperty("mediaLikeScore")+pagina.getMediaPostGiornaliera()*PropertiesService.getIntProperty("mediaPostGiornalieraScore")+pagina.getMediaVisualizzazioni()*PropertiesService.getIntProperty("mediaVisualizzazioniScore"));
+		pagina.setFinalScore(pagina.getMiPiacePagina()*PropertiesService.getFloatProperty("miPiacePaginaScore")+pagina.getFollowersPagina()*PropertiesService.getFloatProperty("followersPaginaScore")+pagina.getMediaCommenti()*PropertiesService.getFloatProperty("mediaCommentiScore")+pagina.getMediaCondivisioni()*PropertiesService.getFloatProperty("mediaCondivisioniScore")+pagina.getMediaLike()*PropertiesService.getFloatProperty("mediaLikeScore")+pagina.getMediaPostGiornaliera()*PropertiesService.getFloatProperty("mediaPostGiornalieraScore")+pagina.getMediaVisualizzazioni()*PropertiesService.getFloatProperty("mediaVisualizzazioniScore"));
 
 		} catch (Exception e) {
 		}
@@ -266,6 +322,9 @@ public class MyDriver {
 				seleniumLogic.endDriverProcessing();
 			}
 			semCounter.release();
+			seleniumLogic.getSemProgBar().acquire();
+			seleniumLogic.getProgressBar().update("Driver "+DRIVER_TAG+" ha processato "+pagina.getNomePagina(),seleniumLogic.getProgressBar().getValue()+1);
+			seleniumLogic.getSemProgBar().release();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 			return;
