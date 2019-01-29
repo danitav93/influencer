@@ -33,9 +33,17 @@ public class PaginaModel implements Comparable<PaginaModel>{
 	private String nomePagina;
 	private String url;
 	
+	private String luogo=" ";
 	
 	
 	
+	
+	public String getLuogo() {
+		return luogo;
+	}
+	public void setLuogo(String luogo) {
+		this.luogo = luogo;
+	}
 	public String getNomePagina() {
 		return nomePagina;
 	}
@@ -157,7 +165,8 @@ public class PaginaModel implements Comparable<PaginaModel>{
 		toReturn=toReturn+"Mi piace: "+miPiacePagina+"\n";
 		toReturn=toReturn+"Followers: "+followersPagina+"\n";
 		toReturn=toReturn+"Media post al giorno: "+mediaPostGiornaliera+"\n";
-		toReturn=toReturn+"ordine facebook: "+ordineFacebook+"\n";
+		toReturn=toReturn+"Ordine facebook: "+ordineFacebook+"\n";
+		toReturn=toReturn+"Luogo: "+luogo+"\n";
 		toReturn=toReturn+"\nPeriodo di riferimento: "+format1.format(calendar2.getTime())+"  -  "+format1.format(calendar1.getTime());
 
 		return toReturn;

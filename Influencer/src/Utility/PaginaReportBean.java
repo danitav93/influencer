@@ -20,6 +20,8 @@ public class PaginaReportBean {
 	private int ordineFacebook=0;
 	
 	private float finalScore=0;
+	
+	private String luogo=" ";
 
 	
 	private String nomePagina;
@@ -127,6 +129,12 @@ public class PaginaReportBean {
 	}
 	public void setOrdine(int ordine) {
 		this.ordine = ordine;
+	}
+	public String getLuogo() {
+		return luogo;
+	}
+	public void setLuogo(String luogo) {
+		this.luogo = luogo;
 	}
 	
 	

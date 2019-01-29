@@ -205,6 +205,14 @@ public class MyDriver {
 			String nomePagina=driver.findElement(By.cssSelector("a[class='_64-f']")).findElement(By.tagName("span")).getText();
 
 			pagina.setNomePagina(nomePagina);
+			
+			//cerco il luogo
+			try {
+				String luogo= driver.findElement(By.cssSelector("div[class='_2wzd']")).getText();
+				pagina.setLuogo(luogo);
+			} catch (Exception e) {
+			}
+			
 
 			int numeroPostUltimoPeriodo=0;
 

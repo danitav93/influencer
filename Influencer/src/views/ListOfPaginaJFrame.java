@@ -41,12 +41,9 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimpleXlsExporterConfiguration;
-import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
 import net.sf.jasperreports.export.SimpleXlsxExporterConfiguration;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 
@@ -75,6 +72,7 @@ public class ListOfPaginaJFrame extends JFrame {
 
 	private JFileChooser fc;
 	private JTextField textField_ordineFacebook;
+	private JTextField textField_luogo;
 
 
 	/**
@@ -85,7 +83,7 @@ public class ListOfPaginaJFrame extends JFrame {
 		
 		
 		setTitle("Risultati");
-		setBounds(100, 100, 450, 756);
+		setBounds(100, 100, 450, 805);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -198,26 +196,26 @@ public class ListOfPaginaJFrame extends JFrame {
 			contentPanel.add(lblFollowers);
 
 			JLabel lblDettagliEsecuzione = new JLabel("Dettagli processing");
-			lblDettagliEsecuzione.setBounds(12, 536, 153, 14);
+			lblDettagliEsecuzione.setBounds(12, 585, 153, 14);
 			contentPanel.add(lblDettagliEsecuzione);
 
 			JLabel lblTempoDiEsecuzione = new JLabel("Tempo di esecuzione");
-			lblTempoDiEsecuzione.setBounds(12, 564, 153, 16);
+			lblTempoDiEsecuzione.setBounds(12, 613, 153, 16);
 			contentPanel.add(lblTempoDiEsecuzione);
 
 			textFieldTempoDIEsecuzione = new JTextField();
 			textFieldTempoDIEsecuzione.setColumns(10);
-			textFieldTempoDIEsecuzione.setBounds(228, 561, 153, 22);
+			textFieldTempoDIEsecuzione.setBounds(228, 610, 153, 22);
 			contentPanel.add(textFieldTempoDIEsecuzione);
 			textFieldTempoDIEsecuzione.setText(new Integer(tempodiEsecuzione).toString()+"s");
 
 			JLabel lblDriversImpiegati = new JLabel("Drivers impiegati");
-			lblDriversImpiegati.setBounds(12, 594, 153, 16);
+			lblDriversImpiegati.setBounds(12, 643, 153, 16);
 			contentPanel.add(lblDriversImpiegati);
 
 			textFieldImpiegati = new JTextField();
 			textFieldImpiegati.setColumns(10);
-			textFieldImpiegati.setBounds(228, 591, 153, 22);
+			textFieldImpiegati.setBounds(228, 640, 153, 22);
 			contentPanel.add(textFieldImpiegati);
 			try {
 				textFieldImpiegati.setText(PropertiesService.getStringProperty("numberOfDrivers"));
@@ -228,13 +226,13 @@ public class ListOfPaginaJFrame extends JFrame {
 			}
 
 			JLabel lblPagineElaborate = new JLabel("Pagine processate");
-			lblPagineElaborate.setBounds(12, 624, 153, 16);
+			lblPagineElaborate.setBounds(12, 673, 153, 16);
 			contentPanel.add(lblPagineElaborate);
 
 
 			textFieldPagineProcessate = new JTextField();
 			textFieldPagineProcessate.setColumns(10);
-			textFieldPagineProcessate.setBounds(228, 621, 153, 22);
+			textFieldPagineProcessate.setBounds(228, 670, 153, 22);
 			contentPanel.add(textFieldPagineProcessate);
 			textFieldPagineProcessate.setText(new Integer(listPagine.size()).toString());
 
@@ -278,7 +276,7 @@ public class ListOfPaginaJFrame extends JFrame {
 					}
 				}
 			});
-			btnEsporta.setBounds(254, 503, 127, 23);
+			btnEsporta.setBounds(254, 535, 127, 23);
 			contentPanel.add(btnEsporta);
 			
 			JLabel lblOrdineFa = new JLabel("Ordine Facebook");
@@ -323,7 +321,7 @@ public class ListOfPaginaJFrame extends JFrame {
 								bean.setMediaLike(pagina.getMediaLike());
 								bean.setMiPiacePagina(pagina.getMiPiacePagina());
 								bean.setMediaPostGiornaliera(pagina.getMediaPostGiornaliera());
-								
+								bean.setLuogo(pagina.getLuogo());
 								beans.add(bean);
 
 								
@@ -372,8 +370,17 @@ public class ListOfPaginaJFrame extends JFrame {
 				}
 					
 			});
-			btnEsportaTutto.setBounds(254, 673, 127, 23);
+			btnEsportaTutto.setBounds(254, 722, 127, 23);
 			contentPanel.add(btnEsportaTutto);
+			
+			JLabel lblLuogo = new JLabel("Luogo");
+			lblLuogo.setBounds(12, 503, 153, 16);
+			contentPanel.add(lblLuogo);
+			
+			textField_luogo = new JTextField();
+			textField_luogo.setColumns(10);
+			textField_luogo.setBounds(228, 500, 153, 22);
+			contentPanel.add(textField_luogo);
 
 
 
@@ -399,6 +406,7 @@ public class ListOfPaginaJFrame extends JFrame {
 						textFieldFollowers.setText(Float.toString(listPagine.get(list.getSelectedIndex()).getFollowersPagina()));
 						textField_ordineFacebook.setText(Float.toString(listPagine.get(list.getSelectedIndex()).getOrdineFacebook()));
 						mediaPostAlGiornoTextField.setText(Float.toString(listPagine.get(list.getSelectedIndex()).getMediaPostGiornaliera()));
+						textField_luogo.setText(listPagine.get(list.getSelectedIndex()).getLuogo());
 					}
 				}
 			};
