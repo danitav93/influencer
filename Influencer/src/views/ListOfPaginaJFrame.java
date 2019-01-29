@@ -10,7 +10,14 @@ import java.awt.event.MouseListener;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -26,8 +33,22 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import Utility.ConfigFileNotFoundException;
+import Utility.PaginaReportBean;
 import Utility.PropertiesNotFoundException;
 import Utility.PropertiesService;
+import logic.Constants;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsExporterConfiguration;
+import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
+import net.sf.jasperreports.export.SimpleXlsxExporterConfiguration;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 
 public class ListOfPaginaJFrame extends JFrame {
 
@@ -53,6 +74,7 @@ public class ListOfPaginaJFrame extends JFrame {
 	private JTextField mediaPostAlGiornoTextField;
 
 	private JFileChooser fc;
+	private JTextField textField_ordineFacebook;
 
 
 	/**
@@ -63,7 +85,7 @@ public class ListOfPaginaJFrame extends JFrame {
 		
 		
 		setTitle("Risultati");
-		setBounds(100, 100, 450, 681);
+		setBounds(100, 100, 450, 756);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -176,26 +198,26 @@ public class ListOfPaginaJFrame extends JFrame {
 			contentPanel.add(lblFollowers);
 
 			JLabel lblDettagliEsecuzione = new JLabel("Dettagli processing");
-			lblDettagliEsecuzione.setBounds(12, 507, 153, 14);
+			lblDettagliEsecuzione.setBounds(12, 536, 153, 14);
 			contentPanel.add(lblDettagliEsecuzione);
 
 			JLabel lblTempoDiEsecuzione = new JLabel("Tempo di esecuzione");
-			lblTempoDiEsecuzione.setBounds(12, 535, 153, 16);
+			lblTempoDiEsecuzione.setBounds(12, 564, 153, 16);
 			contentPanel.add(lblTempoDiEsecuzione);
 
 			textFieldTempoDIEsecuzione = new JTextField();
 			textFieldTempoDIEsecuzione.setColumns(10);
-			textFieldTempoDIEsecuzione.setBounds(228, 532, 153, 22);
+			textFieldTempoDIEsecuzione.setBounds(228, 561, 153, 22);
 			contentPanel.add(textFieldTempoDIEsecuzione);
 			textFieldTempoDIEsecuzione.setText(new Integer(tempodiEsecuzione).toString()+"s");
 
 			JLabel lblDriversImpiegati = new JLabel("Drivers impiegati");
-			lblDriversImpiegati.setBounds(12, 565, 153, 16);
+			lblDriversImpiegati.setBounds(12, 594, 153, 16);
 			contentPanel.add(lblDriversImpiegati);
 
 			textFieldImpiegati = new JTextField();
 			textFieldImpiegati.setColumns(10);
-			textFieldImpiegati.setBounds(228, 562, 153, 22);
+			textFieldImpiegati.setBounds(228, 591, 153, 22);
 			contentPanel.add(textFieldImpiegati);
 			try {
 				textFieldImpiegati.setText(PropertiesService.getStringProperty("numberOfDrivers"));
@@ -206,13 +228,13 @@ public class ListOfPaginaJFrame extends JFrame {
 			}
 
 			JLabel lblPagineElaborate = new JLabel("Pagine processate");
-			lblPagineElaborate.setBounds(12, 595, 153, 16);
+			lblPagineElaborate.setBounds(12, 624, 153, 16);
 			contentPanel.add(lblPagineElaborate);
 
 
 			textFieldPagineProcessate = new JTextField();
 			textFieldPagineProcessate.setColumns(10);
-			textFieldPagineProcessate.setBounds(228, 592, 153, 22);
+			textFieldPagineProcessate.setBounds(228, 621, 153, 22);
 			contentPanel.add(textFieldPagineProcessate);
 			textFieldPagineProcessate.setText(new Integer(listPagine.size()).toString());
 
@@ -230,7 +252,7 @@ public class ListOfPaginaJFrame extends JFrame {
 			fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			fc.setFileFilter(new FileNameExtensionFilter("txt file", "txt"));
 
-			JButton btnEsporta = new JButton("esporta");
+			JButton btnEsporta = new JButton("Esporta singolo");
 			btnEsporta.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					if (list.isSelectionEmpty())  {
@@ -256,8 +278,102 @@ public class ListOfPaginaJFrame extends JFrame {
 					}
 				}
 			});
-			btnEsporta.setBounds(292, 474, 89, 23);
+			btnEsporta.setBounds(254, 503, 127, 23);
 			contentPanel.add(btnEsporta);
+			
+			JLabel lblOrdineFa = new JLabel("Ordine Facebook");
+			lblOrdineFa.setBounds(12, 471, 153, 16);
+			contentPanel.add(lblOrdineFa);
+			
+			textField_ordineFacebook = new JTextField();
+			textField_ordineFacebook.setColumns(10);
+			textField_ordineFacebook.setBounds(228, 468, 153, 22);
+			contentPanel.add(textField_ordineFacebook);
+			
+			JFileChooser fc2;
+			fc2 = new JFileChooser(System.getProperty("user.home")+ "/Desktop");
+			fc2.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			fc2 .addChoosableFileFilter(new FileNameExtensionFilter("PDF", "pdf"));
+			fc2 .addChoosableFileFilter(new FileNameExtensionFilter("Excell",  "xlsx"));
+			JButton btnEsportaTutto = new JButton("Esporta tutto");
+			btnEsportaTutto.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+				
+					try {
+						
+						int returnVal=fc2.showSaveDialog(ListOfPaginaJFrame.this);
+						if (returnVal == JFileChooser.APPROVE_OPTION) {
+							//File file = fc.getSelectedFile();
+							String filename = fc2.getSelectedFile().toString();
+							   if ((!filename .endsWith(".pdf")) && (!filename .endsWith(".xlsx")) )
+							        filename += ".pdf";
+							 
+							Path path = Paths.get(filename);
+							
+							List<PaginaReportBean> beans = new ArrayList<>();
+							for (int i=0;i<listPagine.size();i++ ) {
+								PaginaModel pagina = listPagine.get(i);
+								PaginaReportBean bean= new PaginaReportBean();
+								
+								bean.setOrdine(i+1);
+								bean.setNomePagina(pagina.getNomePagina());
+								bean.setUrl(pagina.getUrl());
+								bean.setCommentiPostUltimoPeriodo(pagina.getCommentiPostUltimoPeriodo());
+								bean.setCondivisioniPostUltimoPeriodo(pagina.getCondivisioniPostUltimoPeriodo());
+								bean.setMediaLike(pagina.getMediaLike());
+								bean.setMiPiacePagina(pagina.getMiPiacePagina());
+								bean.setMediaPostGiornaliera(pagina.getMediaPostGiornaliera());
+								
+								beans.add(bean);
+
+								
+							}
+							Calendar today= Calendar.getInstance(TimeZone.getDefault());
+							Calendar strt= Calendar.getInstance(TimeZone.getDefault());
+							strt.add(Calendar.DAY_OF_MONTH, - PropertiesService.getIntProperty("daysCheck"));	
+							DateFormat format = new SimpleDateFormat("dd MMMM yyyy");
+							Map<String, Object> param = new HashMap<String, Object>();
+							param.put("periodo_di_riferimento", format.format(strt.getTime())+" - "+format.format(today.getTime()));
+							
+							
+							
+							
+							
+							
+							JasperCompileManager.compileReportToFile(Constants.JRXML_PAGES_FILE_PATH, Constants.JASPER_PAGES_FILE_PATH);
+							
+							
+							 
+							  if (filename.endsWith(".xlsx")) {
+								  JRXlsxExporter xlsExporter = new JRXlsxExporter();
+				                    xlsExporter.setExporterInput(new SimpleExporterInput(JasperFillManager.fillReport(Constants.JASPER_PAGES_FILE_PATH, param,new JRBeanCollectionDataSource(beans))));
+				                    xlsExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(path.toString()));
+				                    SimpleXlsxReportConfiguration xlsReportConfiguration = new SimpleXlsxReportConfiguration();
+				                    SimpleXlsxExporterConfiguration xlsExporterConfiguration = new SimpleXlsxExporterConfiguration();
+				                    xlsReportConfiguration.setOnePagePerSheet(true);
+				                    xlsReportConfiguration.setRemoveEmptySpaceBetweenRows(false);
+				                    xlsReportConfiguration.setDetectCellType(true);
+				                    xlsReportConfiguration.setWhitePageBackground(false);
+				                    xlsExporter.setConfiguration(xlsReportConfiguration);
+				                    xlsExporter.setConfiguration(xlsExporterConfiguration);
+				                    xlsExporter.exportReport();
+							  } else {
+									JasperExportManager.exportReportToPdfFile(JasperFillManager.fillReport(Constants.JASPER_PAGES_FILE_PATH, param,new JRBeanCollectionDataSource(beans)), path.toString());
+							  }
+							
+							
+							
+							Object[] options = {"OK"};
+							JOptionPane.showOptionDialog(null, "Esportazione avvenuta con successo","Bene!",JOptionPane.PLAIN_MESSAGE,JOptionPane.INFORMATION_MESSAGE,null,options,options[0]);
+						} 
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+					
+			});
+			btnEsportaTutto.setBounds(254, 673, 127, 23);
+			contentPanel.add(btnEsportaTutto);
 
 
 
@@ -281,6 +397,7 @@ public class ListOfPaginaJFrame extends JFrame {
 						textFieldMediaVisualizzazioni.setText(Float.toString(listPagine.get(list.getSelectedIndex()).getMediaVisualizzazioni()));
 						textFieldMmiPiace.setText(Float.toString(listPagine.get(list.getSelectedIndex()).getMiPiacePagina()));
 						textFieldFollowers.setText(Float.toString(listPagine.get(list.getSelectedIndex()).getFollowersPagina()));
+						textField_ordineFacebook.setText(Float.toString(listPagine.get(list.getSelectedIndex()).getOrdineFacebook()));
 						mediaPostAlGiornoTextField.setText(Float.toString(listPagine.get(list.getSelectedIndex()).getMediaPostGiornaliera()));
 					}
 				}

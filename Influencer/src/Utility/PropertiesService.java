@@ -124,6 +124,7 @@ public class PropertiesService {
 		newProps.setProperty("mediaCondivisioniScore", Float.toString(Constants.mediaCondivisioniScore));
 		newProps.setProperty("numberOfPagesScroll", Integer.toString( Constants.numberOfPagesScroll));
 		newProps.setProperty("mediaVisualizzazioniScore", Float.toString(Constants.mediaCommentiScore));
+		newProps.setProperty("ordineFacebookScore", Float.toString(Constants.ordineFacebookScore));
 		newProps.store(newout,null);
 		
 	}

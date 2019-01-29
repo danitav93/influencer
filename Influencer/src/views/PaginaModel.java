@@ -25,6 +25,8 @@ public class PaginaModel implements Comparable<PaginaModel>{
 	private float mediaCommenti=0;
 	private float mediaVisualizzazioni=0;
 	
+	private int ordineFacebook=0;
+	
 	private float finalScore=0;
 
 	
@@ -155,9 +157,16 @@ public class PaginaModel implements Comparable<PaginaModel>{
 		toReturn=toReturn+"Mi piace: "+miPiacePagina+"\n";
 		toReturn=toReturn+"Followers: "+followersPagina+"\n";
 		toReturn=toReturn+"Media post al giorno: "+mediaPostGiornaliera+"\n";
+		toReturn=toReturn+"ordine facebook: "+ordineFacebook+"\n";
 		toReturn=toReturn+"\nPeriodo di riferimento: "+format1.format(calendar2.getTime())+"  -  "+format1.format(calendar1.getTime());
 
 		return toReturn;
+	}
+	public int getOrdineFacebook() {
+		return ordineFacebook;
+	}
+	public void setOrdineFacebook(int ordineFacebook) {
+		this.ordineFacebook = ordineFacebook;
 	}
 	
 	

@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -30,6 +29,9 @@ public class MyDriver {
 	private WebDriver driver;
 
 	private Queue<String> listaUrlsLocale = new LinkedList<>();
+	
+	private Queue<Integer> listaIndexlocale= new LinkedList<>();
+
 
 	private boolean booleanIsRunning=false;
 	
@@ -48,6 +50,8 @@ public class MyDriver {
 	private boolean ready=false;
 	
 	private int DRIVER_TAG;
+	
+	
 
 
 	public MyDriver(List<PaginaModel> pagine, Semaphore sem,Semaphore semUrls,Queue<String> globalUrlList, Semaphore semCounter, AtomicInteger numberOfPagesToProcessCounter,SeleniumLogic seleniumLogic, int DRIVER_TAG) throws NoDriverFounfException {
@@ -59,7 +63,6 @@ public class MyDriver {
 			
 			
 		}
-		driver.manage().window().setPosition(new Point(-2000, 0));
 		this.pagine=pagine;
 		this.semPagine=sem;
 		this.semUrls=semUrls;
@@ -78,7 +81,9 @@ public class MyDriver {
 				driver.close();
 				return;
 			}
+			int indexPagina=globalUrlList.size();
 			String urlPresaInCarico=globalUrlList.remove();
+			listaIndexlocale.add(indexPagina);
 			listaUrlsLocale.add(urlPresaInCarico);
 			seleniumLogic.getSemProgBar().acquire();
 			seleniumLogic.getProgressBar().update("Driver "+DRIVER_TAG+" ha preso in carico "+urlPresaInCarico,seleniumLogic.getProgressBar().getValue()+1);
@@ -108,6 +113,9 @@ public class MyDriver {
 
 	private void processPagina() throws PropertiesNotFoundException, ConfigFileNotFoundException {
 
+		System.out.println("uauauauauauauaua:");
+
+		
 		if (listaUrlsLocale.isEmpty()) {
 			booleanIsRunning=false;
 			try {
@@ -132,7 +140,6 @@ public class MyDriver {
 			seleniumLogic.getProgressBar().update("Driver "+DRIVER_TAG+" sta processando "+urlPagina,null);
 			seleniumLogic.getSemProgBar().release();
 		} catch (InterruptedException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
 		
@@ -162,6 +169,8 @@ public class MyDriver {
 		}
 		
 		PaginaModel pagina=new PaginaModel();
+		
+		pagina.setOrdineFacebook(seleniumLogic.getTotalepagine()-listaIndexlocale.remove());
 
 		try {
 			semPagine.acquire();
@@ -174,6 +183,9 @@ public class MyDriver {
 
 		try {
 
+			System.out.println("wollolololol:");
+
+			
 			String miPiaceText=driver.findElement(By.cssSelector("div[class='_4-u2 _6590 _3xaf _4-u8']")).findElements(By.cssSelector("div[class='_4bl9']")).get(0).findElement(By.tagName("div")).getText();
 
 			int miPiace=Method.parseInt(miPiaceText.substring(8, 8+miPiaceText.substring(8).indexOf(" ")));
@@ -182,6 +194,8 @@ public class MyDriver {
 
 			String followersText=driver.findElement(By.cssSelector("div[class='_4-u2 _6590 _3xaf _4-u8']")).findElements(By.cssSelector("div[class='_4bl9']")).get(1).findElement(By.tagName("div")).getText();
 
+			System.out.println("wwwwwww     "+ followersText.substring(10)+"         wwwwwwwww");
+			
 			int followers=Method.parseInt(followersText.substring(10));
 
 			pagina.setFollowersPagina(followers);
@@ -204,6 +218,8 @@ public class MyDriver {
 
 			int numeroPostVisualizzazioniUltimoPeriodo=0;
 
+			System.out.println("nome pagina:"+nomePagina);
+			
 			Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
 			calendar.add(Calendar.DAY_OF_MONTH, - PropertiesService.getIntProperty("daysCheck"));		
 
@@ -211,9 +227,9 @@ public class MyDriver {
 			List<WebElement> postsElementDown= driver.findElements(By.cssSelector("div[class='_57w']"));
 
 
+			System.out.println("post trovati:"+postsElementUp.size());
 
 			for (int i=0;i<postsElementUp.size();i++) {
-				
 				if (i==postsElementUp.size()/2) {
 					try {
 						seleniumLogic.getSemProgBar().acquire();
@@ -251,6 +267,8 @@ public class MyDriver {
 				}
 				if (calendarFound.after(calendar)) {
 
+					System.out.println("post trovato data:"+calendarFound.toString());
+					
 					numeroPostUltimoPeriodo++;
 
 
@@ -310,9 +328,10 @@ public class MyDriver {
 			pagina.setMediaVisualizzazioni((float)visualizzazioniPostUltimoPeriodo/numeroPostVisualizzazioniUltimoPeriodo);
 		}
 
-		pagina.setFinalScore((pagina.getMiPiacePagina()*PropertiesService.getFloatProperty("miPiacePaginaScore"))+(pagina.getFollowersPagina()*PropertiesService.getFloatProperty("followersPaginaScore"))+(pagina.getMediaCommenti()*PropertiesService.getFloatProperty("mediaCommentiScore"))+(pagina.getMediaCondivisioni()*PropertiesService.getFloatProperty("mediaCondivisioniScore"))+(pagina.getMediaLike()*PropertiesService.getFloatProperty("mediaLikeScore"))+(pagina.getMediaPostGiornaliera()*PropertiesService.getFloatProperty("mediaPostGiornalieraScore"))+(pagina.getMediaVisualizzazioni()*PropertiesService.getFloatProperty("mediaVisualizzazioniScore")));
+		pagina.setFinalScore((pagina.getMiPiacePagina()*PropertiesService.getFloatProperty("miPiacePaginaScore"))+(pagina.getFollowersPagina()*PropertiesService.getFloatProperty("followersPaginaScore"))+(pagina.getMediaCommenti()*PropertiesService.getFloatProperty("mediaCommentiScore"))+(pagina.getMediaCondivisioni()*PropertiesService.getFloatProperty("mediaCondivisioniScore"))+(pagina.getMediaLike()*PropertiesService.getFloatProperty("mediaLikeScore"))+(pagina.getMediaPostGiornaliera()*PropertiesService.getFloatProperty("mediaPostGiornalieraScore"))+(pagina.getMediaVisualizzazioni()*PropertiesService.getFloatProperty("mediaVisualizzazioniScore"))+((seleniumLogic.getTotalepagine()-pagina.getOrdineFacebook())*PropertiesService.getFloatProperty("ordineFacebookScore")));
 
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		try {
 			semCounter.acquire();
@@ -322,6 +341,7 @@ public class MyDriver {
 			}
 			semCounter.release();
 			seleniumLogic.getSemProgBar().acquire();
+			System.out.println("aooooooooooooooooooooooooooooo");
 			seleniumLogic.getProgressBar().update("Driver "+DRIVER_TAG+" ha processato "+pagina.getNomePagina(),seleniumLogic.getProgressBar().getValue()+1);
 			seleniumLogic.getSemProgBar().release();
 		} catch (InterruptedException e1) {

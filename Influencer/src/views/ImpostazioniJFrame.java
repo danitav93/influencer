@@ -44,6 +44,7 @@ public class ImpostazioniJFrame extends JFrame {
 	private JTextField textField_MiPiace;
 	private JTextField textField_followers;
 	private JTextField textField_arcotemporale;
+	private JTextField textField_perordinefacebook;
 
 	/**
 	 * Launch the application.
@@ -66,7 +67,7 @@ public class ImpostazioniJFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public ImpostazioniJFrame() {
-		setBounds(100, 100, 450, 351);
+		setBounds(100, 100, 450, 388);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -212,14 +213,14 @@ public class ImpostazioniJFrame extends JFrame {
 		
 		
 		JLabel lblArcoTemporalePer = new JLabel("Arco temporale per la media (ultimi x giorni)");
-		lblArcoTemporalePer.setBounds(10, 206, 274, 14);
+		lblArcoTemporalePer.setBounds(12, 224, 274, 14);
 		panel_3.add(lblArcoTemporalePer);
 		
 		textField_arcotemporale = new JTextField();
 		textField_arcotemporale.addKeyListener(new MyIntFilter());
 		textField_arcotemporale.setText("0");
 		textField_arcotemporale.setColumns(10);
-		textField_arcotemporale.setBounds(276, 203, 53, 20);
+		textField_arcotemporale.setBounds(278, 221, 53, 20);
 		panel_3.add(textField_arcotemporale);
 		try {
 			textField_arcotemporale.setText(PropertiesService.getStringProperty("daysCheck"));
@@ -241,17 +242,18 @@ public class ImpostazioniJFrame extends JFrame {
 				textField_MiPiace.setText(Float.toString(Constants.miPiacePaginaScore));
 				textField_followers.setText(Float.toString(Constants.followersPaginaScore));
 				textField_arcotemporale.setText(Integer.toString(Constants.daysCheck));
+				textField_perordinefacebook.setText(Float.toString(Constants.ordineFacebookScore));
 			}
 		});
-		button_3.setBounds(169, 240, 89, 23);
+		button_3.setBounds(171, 258, 89, 23);
 		panel_3.add(button_3);
 		
 		JButton button_4 = new JButton("Salva");
 		button_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				String[] keys= new String[] {"mediaLikeScore","mediaCommentiScore","mediaPostGiornalieraScore","mediaCondivisioniScore","mediaVisualizzazioniScore","miPiacePaginaScore","followersPaginaScore","daysCheck"};
-				String[] values= new String[] {textField_mediaLike.getText(),textField_mediaCommenti.getText(),textField_mediaPostGiornalieri.getText(),textField_mediaCondivisioni.getText(),textField_mediaVisualizzazioni.getText(),textField_MiPiace.getText(),textField_followers.getText(),textField_arcotemporale.getText()};
+				String[] keys= new String[] {"mediaLikeScore","mediaCommentiScore","mediaPostGiornalieraScore","mediaCondivisioniScore","mediaVisualizzazioniScore","miPiacePaginaScore","followersPaginaScore","daysCheck","ordineFacebookScore"};
+				String[] values= new String[] {textField_mediaLike.getText(),textField_mediaCommenti.getText(),textField_mediaPostGiornalieri.getText(),textField_mediaCondivisioni.getText(),textField_mediaVisualizzazioni.getText(),textField_MiPiace.getText(),textField_followers.getText(),textField_arcotemporale.getText(),textField_perordinefacebook.getText()};
 				try {
 					PropertiesService.saveParamsChanges(keys,values);
 					Object[] options = {"OK"};
@@ -263,8 +265,26 @@ public class ImpostazioniJFrame extends JFrame {
 				}
 			}
 		});
-		button_4.setBounds(320, 240, 89, 23);
+		button_4.setBounds(322, 258, 89, 23);
 		panel_3.add(button_4);
+		
+		JLabel lblPesoOrdineFacebook = new JLabel("Peso ordine facebook:");
+		lblPesoOrdineFacebook.setBounds(10, 188, 175, 14);
+		panel_3.add(lblPesoOrdineFacebook);
+		
+		textField_perordinefacebook = new JTextField();
+		textField_perordinefacebook.addKeyListener(new MyFloatFilter(textField_perordinefacebook));
+		textField_perordinefacebook.setText("0");
+		textField_perordinefacebook.setColumns(10);
+		textField_perordinefacebook.setBounds(195, 188, 53, 20);
+		panel_3.add(textField_perordinefacebook);
+		try {
+			textField_perordinefacebook.setText(PropertiesService.getStringProperty("ordineFacebookScore"));
+		} catch (Exception f) {
+			Object[] options = {"OK"};
+			 JOptionPane.showOptionDialog(null, "Errore con il file di configurazione. Controlla la presenza del file config.properties.","Errore!",JOptionPane.PLAIN_MESSAGE,JOptionPane.ERROR_MESSAGE,null,options,options[0]);
+		    System.exit(0);
+		}
 		
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("Facebook", null, panel_2, null);
@@ -484,5 +504,4 @@ public class ImpostazioniJFrame extends JFrame {
 		fc.setFileFilter(new FileNameExtensionFilter("exe file", "exe"));
 		
 	}
-
 }

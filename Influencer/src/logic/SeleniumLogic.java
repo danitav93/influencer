@@ -41,7 +41,7 @@ public class SeleniumLogic {
 	private  Semaphore semCounter= new Semaphore(1);
 	private Semaphore semProgBar= new Semaphore(1);
 	private Semaphore semDriver= new Semaphore(1);
-	
+
 	private MyProgressBar myProgressBar;
 
 	private SeleniumLogic seleniumLogic=this;
@@ -59,8 +59,11 @@ public class SeleniumLogic {
 	private  boolean isProcessingPageStarted=false;
 
 	private  JDialog dlg;
-	
+
 	private JButton btnEseguiRicerca;
+	
+	private int totalepagine;
+	
 
 	public SeleniumLogic(String query, JDialog dlg,JButton btnEseguiRicerca) {
 		this.queryString=query;
@@ -71,7 +74,7 @@ public class SeleniumLogic {
 	public void startSeleniumLogic() throws PropertiesNotFoundException,ConfigFileNotFoundException, NessunaPaginaTrovataException, LoginFaildException, NoDriverFounfException {
 
 		System.setProperty("webdriver.chrome.driver", PropertiesService.getStringProperty("driverPath"));
-		
+
 		//inizializzo il primo driver così vado veloce
 		initFirstDriver();
 
@@ -82,9 +85,9 @@ public class SeleniumLogic {
 			Thread thread = new Thread(){
 				public void run() {
 					try  {
-						
-						
-						
+
+
+
 						MyDriver driver= new MyDriver(pagine,semPagine,semUrls,urls,semCounter,numberOfPagesToProcessCounter,seleniumLogic,j);
 
 						semDriver.acquire();
@@ -95,7 +98,7 @@ public class SeleniumLogic {
 						}
 						drivers.add(driver);
 						semDriver.release();
-						
+
 						// launch Fire fox and direct it to the Base URL
 						driver.getDriver().get(Constants.FACEBOOK_BASE_URL);
 						driver.getDriver().findElement(By.xpath(".//*[@data-testid='royal_email']")).sendKeys(PropertiesService.getStringProperty("facebookEmail"));
@@ -111,7 +114,7 @@ public class SeleniumLogic {
 							driver.fetchUrlFromGlobalList();
 							driver.setHasBeenAdvisedToStart(true);
 						}
-						
+
 
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -124,7 +127,7 @@ public class SeleniumLogic {
 
 		//wait to load page
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -132,32 +135,30 @@ public class SeleniumLogic {
 
 		//use driver0 to fetch pages urls
 		try {
-		drivers.get(0).getDriver().findElement(By.xpath(".//*[@data-testid='search_input']")).sendKeys(queryString); //insert search
-		} catch (NoSuchElementException e) {
+			drivers.get(0).getDriver().findElement(By.xpath(".//*[@data-testid='search_input']")).sendKeys(queryString); //insert search
+			
+			drivers.get(0).getDriver().findElement(By.xpath(".//*[@class='_42ft _4jy0 _4w98 _4jy3 _517h _51sy _4w97']")).click(); //insert search
+
+			
+			Thread.sleep(4000);
+		} catch (NoSuchElementException | InterruptedException e) {
 			closeDrivers();
 			dlg.setVisible(false);
 			throw new LoginFaildException();
 		}
-		drivers.get(0).getDriver().findElement(By.xpath(".//*[@data-testid='facebar_search_button']")).click();
 
 		boolean arrivedToPages=false;
 
 		while (!arrivedToPages) {
 			//go to the "page" window
 			try {
-				List<WebElement> elements=drivers.get(0).getDriver().findElements(By.tagName("li"));
 
-				for (WebElement element: elements) {
-					if (element.getAttribute("data-edge")!=null && element.getAttribute("data-edge").equals("keywords_pages")) {
-						element.click();
-						arrivedToPages=true;
-						break;
-					}
-				}
+				drivers.get(0).getDriver().findElement(By.xpath(".//*[@class='_43o4 _4470']")).findElement(By.xpath(".//*[@data-edge='keywords_pages']")).findElement(By.tagName("a")).click(); //insert search	
+				arrivedToPages=true;
 				if (!arrivedToPages) {
-				dlg.setVisible(false);
-				closeDrivers();
-				throw new NessunaPaginaTrovataException();
+					dlg.setVisible(false);
+					closeDrivers();
+					throw new NessunaPaginaTrovataException();
 				}
 			}
 			catch(org.openqa.selenium.StaleElementReferenceException ex) { //repeat the action in case of error
@@ -187,20 +188,23 @@ public class SeleniumLogic {
 		}
 
 		numberOfPagesToProcessCounter.set(urls.size());
+		
+		totalepagine=numberOfPagesToProcessCounter.get();
+		
 
 		//set the progress bar
 		//Where member variables are declared:
 		//Where the GUI is constructed:
-		
+
 		myProgressBar = new MyProgressBar(numberOfPagesToProcessCounter.get());
-		
+
 		myProgressBar.update(numberOfPagesToProcessCounter.get()+" pagine da processare.",null);
-		
+
 		myProgressBar.setVisible(true);
-		
+
 		dlg.setVisible(false);
-		
-		
+
+
 		startDriverProcessing();
 
 
@@ -209,6 +213,14 @@ public class SeleniumLogic {
 
 
 
+
+
+
+
+
+	public int getTotalepagine() {
+		return totalepagine;
+	}
 
 	public void closeDrivers() {
 		try {
@@ -263,7 +275,7 @@ public class SeleniumLogic {
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
-		
+
 
 		myProgressBar.update("Processing delle pagine completato in "+elapsedTime/1000+"s.",null);
 		Collections.sort(pagine,Collections.reverseOrder());
@@ -283,13 +295,13 @@ public class SeleniumLogic {
 		return myProgressBar;
 	}
 
-	
+
 
 	public Semaphore getSemProgBar() {
 		return semProgBar;
 	}
 
-	
+
 
 
 

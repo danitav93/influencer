@@ -11,7 +11,9 @@ public class Constants {
 	//application
 	public static final int MAX_DRIVER_PROCESSING_PAGE_NUMBER = 10;
 	public static final String PROPERTIES_FILE_PATH = System.getProperty("user.home")+"/FindYourInfluencer/config.properties";
-	
+	public static final String JASPER_PAGES_FILE_PATH = System.getProperty("user.home")+"/FindYourInfluencer/Leaf_Red_Tabulare.jasper";
+	public static final String JRXML_PAGES_FILE_PATH = System.getProperty("user.home")+"/FindYourInfluencer/Leaf_Red_Tabulare.jrxml";
+
 	//default parameters
 	public static final String driverPath=System.getProperty("user.home")+ "\\Desktop"+"\\chromedriver.exe";
 	public static final int	numberOfDrivers=3;
@@ -27,6 +29,10 @@ public class Constants {
 	public static final	int mediaLikeScore=1;
 	public static final	int mediaPostGiornalieriScore=1;
 	public static final	int mediaVisualizzazioniScore=1;
+	public static final	int ordineFacebookScore=1;
+	
+	//versione
+	public static final int versione=2;
 
 
 }
