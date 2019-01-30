@@ -83,7 +83,7 @@ public class ListOfPaginaJFrame extends JFrame {
 		
 		
 		setTitle("Risultati");
-		setBounds(100, 100, 450, 805);
+		setBounds(100, 100, 890, 654);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -196,26 +196,26 @@ public class ListOfPaginaJFrame extends JFrame {
 			contentPanel.add(lblFollowers);
 
 			JLabel lblDettagliEsecuzione = new JLabel("Dettagli processing");
-			lblDettagliEsecuzione.setBounds(12, 585, 153, 14);
+			lblDettagliEsecuzione.setBounds(446, 13, 153, 14);
 			contentPanel.add(lblDettagliEsecuzione);
 
 			JLabel lblTempoDiEsecuzione = new JLabel("Tempo di esecuzione");
-			lblTempoDiEsecuzione.setBounds(12, 613, 153, 16);
+			lblTempoDiEsecuzione.setBounds(446, 41, 153, 16);
 			contentPanel.add(lblTempoDiEsecuzione);
 
 			textFieldTempoDIEsecuzione = new JTextField();
 			textFieldTempoDIEsecuzione.setColumns(10);
-			textFieldTempoDIEsecuzione.setBounds(228, 610, 153, 22);
+			textFieldTempoDIEsecuzione.setBounds(662, 38, 153, 22);
 			contentPanel.add(textFieldTempoDIEsecuzione);
 			textFieldTempoDIEsecuzione.setText(new Integer(tempodiEsecuzione).toString()+"s");
 
 			JLabel lblDriversImpiegati = new JLabel("Drivers impiegati");
-			lblDriversImpiegati.setBounds(12, 643, 153, 16);
+			lblDriversImpiegati.setBounds(446, 71, 153, 16);
 			contentPanel.add(lblDriversImpiegati);
 
 			textFieldImpiegati = new JTextField();
 			textFieldImpiegati.setColumns(10);
-			textFieldImpiegati.setBounds(228, 640, 153, 22);
+			textFieldImpiegati.setBounds(662, 68, 153, 22);
 			contentPanel.add(textFieldImpiegati);
 			try {
 				textFieldImpiegati.setText(PropertiesService.getStringProperty("numberOfDrivers"));
@@ -226,13 +226,13 @@ public class ListOfPaginaJFrame extends JFrame {
 			}
 
 			JLabel lblPagineElaborate = new JLabel("Pagine processate");
-			lblPagineElaborate.setBounds(12, 673, 153, 16);
+			lblPagineElaborate.setBounds(446, 101, 153, 16);
 			contentPanel.add(lblPagineElaborate);
 
 
 			textFieldPagineProcessate = new JTextField();
 			textFieldPagineProcessate.setColumns(10);
-			textFieldPagineProcessate.setBounds(228, 670, 153, 22);
+			textFieldPagineProcessate.setBounds(662, 98, 153, 22);
 			contentPanel.add(textFieldPagineProcessate);
 			textFieldPagineProcessate.setText(new Integer(listPagine.size()).toString());
 
@@ -370,7 +370,7 @@ public class ListOfPaginaJFrame extends JFrame {
 				}
 					
 			});
-			btnEsportaTutto.setBounds(254, 722, 127, 23);
+			btnEsportaTutto.setBounds(579, 142, 127, 23);
 			contentPanel.add(btnEsportaTutto);
 			
 			JLabel lblLuogo = new JLabel("Luogo");
